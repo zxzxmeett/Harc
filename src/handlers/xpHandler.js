@@ -31,7 +31,7 @@ async function handleXP(message) {
     }
 
     message.channel.send(
-      `${message.author.username} reached level ${user.level}!`
+      `<@${user.userId}> reached level ${user.level}!`
     );
   }
 

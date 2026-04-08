@@ -12,7 +12,7 @@ module.exports = {
     }
 
     message.channel.send(
-      `📊 ${message.author.username}\nLevel: ${user.level}\nXP: ${user.xp}`
+      `📊 <@${user.userId}>\nLevel: ${user.level}\nXP: ${user.xp}`
     );
   },
 };

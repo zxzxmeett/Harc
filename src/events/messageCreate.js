@@ -1,6 +1,7 @@
 const { isOnCooldown } = require("../utils/coolDown");
 const { handleXP } = require("../handlers/xpHandler");
 const rankCommand = require("../commands/rank");
+const topCommand = require("../commands/top");
 
 module.exports = (client) => {
     client.on("messageCreate", (message) => {
@@ -12,6 +13,9 @@ module.exports = (client) => {
 
         if (command === "rank") {
             return rankCommand.execute(message);
+        }
+        if (command === "top") {
+            return topCommand.execute(message);
         }
     }
 
