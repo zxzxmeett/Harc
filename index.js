@@ -1,7 +1,9 @@
 require("dotenv").config();
 const { Client, GatewayIntentBits } = require("discord.js");
 
+// In-memory storage (temporary)
 const users = {};
+const cooldown = {};
 
 const client = new Client({
     intents: [
@@ -11,35 +13,53 @@ const client = new Client({
     ],
 });
 
+// Bot ready
 client.once("clientReady", () => {
     console.log(`Logged in as ${client.user.tag}`);
 });
 
+// Message event
 client.on("messageCreate", (message) => {
     if (message.author.bot) return;
 
     const userId = message.author.id;
-    //If user not exists in the users object, create a new entry for them
+    const now = Date.now();
+
+    // Cooldown (5 seconds)
+    if (cooldown[userId] && now - cooldown[userId] < 5000) {
+        return;
+    }
+    cooldown[userId] = now;
+
+    // Initialize user if not exists
     if (!users[userId]) {
-    users[userId] = {
+        users[userId] = {
             xp: 0,
-            level: 1
+            level: 1,
         };
     }
-    //give XP
+
+    // Give XP
     users[userId].xp += 10;
 
     const user = users[userId];
 
-    // check level up
-    const xpNeeded = user.level * 100;
-    if (user.xp >= xpNeeded) {
-        user.level++;
-        user.xp = user.xp - xpNeeded;
+    // Handle multiple level-ups properly
+    let leveledUp = false;
 
-        console.log(`LEVEL UP → ${message.author.username} is now level ${user.level}`);
+    while (user.xp >= user.level * 100) {
+        user.xp -= user.level * 100;
+        user.level++;
+        leveledUp = true;
     }
-    console.log(users[userId]);
+
+    // Send message if leveled up
+    if (leveledUp) {
+        message.reply(`LEVEL UP → ${message.author.username} Reached level ${user.level}`);
+    }
+
+    // Debug log
+    console.log(`${message.author.username}:`, user);
 });
 
 client.login(process.env.TOKEN);
