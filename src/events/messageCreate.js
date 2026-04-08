@@ -17,7 +17,7 @@ module.exports = (client) => {
 
         const userId = message.author.id;
 
-        if (isOnCooldown(userId, 5000)) return;
+        if (isOnCooldown(userId, 100)) return;
 
         handleXP(message);
     });

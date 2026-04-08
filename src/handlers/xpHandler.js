@@ -1,7 +1,12 @@
 const User = require("../models/User");
+const levelRoles = require("../config/levelRoles");
 
 async function handleXP(message) {
+    if (!message.guild) return;
+
     const userId = message.author.id;
+    const guild = message.guild; 
+    const member = message.member; 
 
     let user = await User.findOne({ userId });
 
@@ -10,22 +15,27 @@ async function handleXP(message) {
     }
 
     user.xp += 10;
+    const newLevel = Math.floor(user.xp / 100) + 1;
 
-    let leveledUp = false;
+    if (newLevel > user.level) {
+    user.level = newLevel;
 
-    while (user.xp >= user.level * 100) {
-        user.xp -= user.level * 100;
-        user.level++;
-        leveledUp = true;
+    //ROLE ASSIGNMENT
+    const roleId = levelRoles[newLevel];
+    if (roleId) {
+        const role = guild.roles.cache.get(roleId);
+
+        if (role && member) {
+            await member.roles.add(role);
+        }
     }
+
+    message.channel.send(
+      `${message.author.username} reached level ${user.level}!`
+    );
+  }
 
     await user.save();
-
-    if (leveledUp) {
-        message.channel.send(
-        `${message.author.username} reached level ${user.level}!`
-        );
-    }
 
     console.log(`${message.author.username}:`, user);
 }
