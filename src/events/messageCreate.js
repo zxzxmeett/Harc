@@ -1,14 +1,24 @@
 const { isOnCooldown } = require("../utils/coolDown");
 const { handleXP } = require("../handlers/xpHandler");
+const rankCommand = require("../commands/rank");
 
 module.exports = (client) => {
-  client.on("messageCreate", (message) => {
-    if (message.author.bot) return;
+    client.on("messageCreate", (message) => {
+        if (message.author.bot) return;
 
-    const userId = message.author.id;
+        // COMMAND HANDLING
+        if (message.content.startsWith("/")) {
+            const command = message.content.slice(1).toLowerCase();
 
-    if (isOnCooldown(userId, 5000)) return;
+        if (command === "rank") {
+            return rankCommand.execute(message);
+        }
+    }
 
-    handleXP(message);
-  });
+        const userId = message.author.id;
+
+        if (isOnCooldown(userId, 5000)) return;
+
+        handleXP(message);
+    });
 };

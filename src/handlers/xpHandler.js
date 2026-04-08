@@ -1,19 +1,17 @@
-const users = require("../data/users");
+const User = require("../models/User");
 
-function handleXP(message) {
+async function handleXP(message) {
     const userId = message.author.id;
 
-    if (!users[userId]) {
-        users[userId] = {
-        xp: 0,
-        level: 1,
-        };
+    let user = await User.findOne({ userId });
+
+    if (!user) {
+        user = new User({ userId });
     }
 
-    users[userId].xp += 10;
+    user.xp += 10;
 
-    const user = users[userId];
-        let leveledUp = false;
+    let leveledUp = false;
 
     while (user.xp >= user.level * 100) {
         user.xp -= user.level * 100;
@@ -21,9 +19,11 @@ function handleXP(message) {
         leveledUp = true;
     }
 
+    await user.save();
+
     if (leveledUp) {
-     message.channel.send(
-        `${message.author.username} reached level ${user.level} W!`
+        message.channel.send(
+        `${message.author.username} reached level ${user.level}!`
         );
     }
 
