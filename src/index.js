@@ -1,9 +1,9 @@
 require("dotenv").config({ path: "../.env" });
-require("dotenv").config({ path: "../.env" });
 
 const connectDB = require("./config/database");
 const { Client, GatewayIntentBits } = require("discord.js");
 const messageCreate = require("./events/messageCreate");
+const interactionCreate = require("./events/interactionCreate");
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -18,5 +18,6 @@ client.once("clientReady", () => {
 
 // Load events
 messageCreate(client);
+interactionCreate(client);
 connectDB();
 client.login(process.env.TOKEN);
