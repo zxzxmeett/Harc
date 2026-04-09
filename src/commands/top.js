@@ -3,10 +3,12 @@ const User = require("../models/User");
 module.exports = {
   name: "top",
   async execute(interaction) {
+    await interaction.deferReply();
+
     const users = await User.find().sort({ xp: -1 }).limit(10);
 
     if (!users.length) {
-      return interaction.reply("No data yet.");
+      return interaction.editReply("No data yet.");
     }
 
     let leaderboard = "🏆 **Leaderboard**\n\n";
@@ -14,6 +16,6 @@ module.exports = {
       leaderboard += `${index + 1}. <@${user.userId}> — Level ${user.level} (${user.xp} XP)\n`;
     });
 
-    interaction.reply(leaderboard);
+    await interaction.editReply(leaderboard);
   },
 };
